@@ -29,6 +29,7 @@ public class AssignmentController {
 	@Autowired
 	CourseRepository courseRepository;
 	
+	//addAssignment lets intructor add a new assignment to the course. 
 	@PostMapping("/assignment/create")
 	@Transactional 
 	public void addAssignment(@RequestParam("id") int courseId, @RequestParam("name") String name, @RequestParam("due") String date) {
@@ -47,7 +48,7 @@ public class AssignmentController {
 		}
 		
 	}
-	
+	//updateAssignmentName allows instructor to change the name of assignment. 
 	@PutMapping("/assignment/update")
 	@Transactional
 	public void updateAssignmentName(@RequestParam("id") Integer assignmentId, @RequestParam("name") String name) {
@@ -61,7 +62,7 @@ public class AssignmentController {
 		}
 		
 	}
-	
+	//deleteAssignment allows instructor to delete an assignment only if it hasnt been graded yet. 
 	@DeleteMapping("/assignment/delete")
 	@Transactional
 	public void deleteAssignment(@RequestParam("id") int assignmentId) {

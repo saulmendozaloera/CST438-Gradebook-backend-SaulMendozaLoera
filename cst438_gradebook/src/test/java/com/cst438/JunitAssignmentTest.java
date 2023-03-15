@@ -60,6 +60,7 @@ class JunitAssignmentTest {
 	public void addAssignment() throws Exception{
 		MockHttpServletResponse response;
 		
+		//Mock Database Data
 		Course course = new Course();
 		course.setCourse_id(TEST_COURSE_ID);
 		course.setSemester(TEST_COURSE_SEMESTER);
@@ -73,12 +74,16 @@ class JunitAssignmentTest {
 		assignment.setName(TEST_ASSIGNMENT_NAME);
 		assignment.setNeedsGrading(1);
 		assignment.setCourse(course);
-	
+		
+		//Given 
 		given(courseRepository.findById(TEST_COURSE_ID)).willReturn(Optional.of(course));
 		given(assignmentRepository.findById(TEST_ASSIGNMENT_ID)).willReturn(Optional.of(assignment));
+		//End of mock data
 		
+		//http post 
 		response = mvc.perform(MockMvcRequestBuilders.post("/assignment/create").param("id", asJsonString(TEST_COURSE_ID)).param("name",TEST_ASSIGNMENT_NAME).param("due","2023-03-29").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 		
+		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
 		
 	}
@@ -88,6 +93,7 @@ class JunitAssignmentTest {
 	public void updateAssignmentName() throws Exception{
 		MockHttpServletResponse response;
 		
+		//Mock Database Data
 		Course course = new Course();
 		course.setCourse_id(TEST_COURSE_ID);
 		course.setSemester(TEST_COURSE_SEMESTER);
@@ -103,12 +109,15 @@ class JunitAssignmentTest {
 		assignment.setNeedsGrading(1);
 		assignment.setCourse(course);
 		
-		
+		//Given 
 		given(courseRepository.findById(TEST_COURSE_ID)).willReturn(Optional.of(course));
 		given(assignmentRepository.findById(TEST_ASSIGNMENT_ID)).willReturn(Optional.of(assignment));
+		//End of mock data
 		
+		//http put 
 		response = mvc.perform(MockMvcRequestBuilders.put("/assignment/update").param("id", asJsonString(TEST_ASSIGNMENT_ID)).param("name","lab2 - Statistical Probabilities").contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 		
+		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
 		
 	}
@@ -118,6 +127,7 @@ class JunitAssignmentTest {
 	public void deleteAssignment() throws Exception{
 		MockHttpServletResponse response;
 		
+		//Mock Database Data
 		Course course = new Course();
 		course.setCourse_id(TEST_COURSE_ID);
 		course.setSemester(TEST_COURSE_SEMESTER);
@@ -134,10 +144,15 @@ class JunitAssignmentTest {
 		assignment.setCourse(course);
 		assignmentRepository.save(assignment);
 		
+		//Given 
 		given(courseRepository.findById(TEST_COURSE_ID)).willReturn(Optional.of(course));
 		given(assignmentRepository.findById(TEST_ASSIGNMENT_ID)).willReturn(Optional.of(assignment));
+		//End of mock data
+		
+		//http delete
 		response = mvc.perform(MockMvcRequestBuilders.delete("/assignment/delete").param("id", asJsonString(TEST_ASSIGNMENT_ID)).contentType(MediaType.APPLICATION_JSON).accept(MediaType.APPLICATION_JSON)).andReturn().getResponse();
 		
+		// verify that return status = OK (value 200)
 		assertEquals(200, response.getStatus());
 	}
 
