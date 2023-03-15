@@ -1,16 +1,18 @@
 package com.cst438.controllers;
 
-import java.sql.Date;  
+import java.sql.Date;
+
+import javax.transaction.Transactional;
 
 import org.springframework.beans.factory.annotation.Autowired;
 import org.springframework.http.HttpStatus;
 import org.springframework.web.bind.annotation.CrossOrigin;
 import org.springframework.web.bind.annotation.DeleteMapping;
-import org.springframework.web.bind.annotation.PathVariable;
 import org.springframework.web.bind.annotation.PostMapping;
 import org.springframework.web.bind.annotation.PutMapping;
 import org.springframework.web.bind.annotation.RestController;
 import org.springframework.web.server.ResponseStatusException;
+import org.springframework.web.bind.annotation.RequestParam;
 
 import com.cst438.domain.Assignment;
 import com.cst438.domain.AssignmentRepository;
@@ -28,30 +30,44 @@ public class AssignmentController {
 	CourseRepository courseRepository;
 	
 	@PostMapping("/assignment/create")
-	public void addAssignment() {
-		Course course = courseRepository.findById(123456).orElse(null);
-		Assignment assignment = new Assignment();
-		assignment.setId(3);
-		assignment.setDueDate(Date.valueOf("2023-03-29"));
-		assignment.setName("hw2 - Probabilities");
-		assignment.setNeedsGrading(1);
-		assignment.setCourse(course);
-		assignmentRepository.save(assignment);
+	@Transactional 
+	public void addAssignment(@RequestParam("id") int courseId, @RequestParam("name") String name, @RequestParam("due") String date) {
+		Course course = courseRepository.findById(courseId).orElse(null);
+		
+		if(course != null) {
+			Assignment assignment = new Assignment();
+			assignment.setDueDate(Date.valueOf(date));
+			assignment.setName(name);
+			assignment.setNeedsGrading(1);
+			assignment.setCourse(course);
+			assignmentRepository.save(assignment);
+		}
+		else {
+			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment cannot be created for this course. "+courseId);
+		}
 		
 	}
 	
-	@PutMapping("/assignment/update/{id}")
-	public void updateAssignmentName(@PathVariable("id") Integer assignmentId) {
-		Assignment assignment = assignmentRepository.findById(3).orElse(null); 
-		assignment.setName("lab2 - statistical probabilities");
-		assignmentRepository.save(assignment);
+	@PutMapping("/assignment/update")
+	@Transactional
+	public void updateAssignmentName(@RequestParam("id") Integer assignmentId, @RequestParam("name") String name) {
+		Assignment assignment = assignmentRepository.findById(assignmentId).orElse(null); 
+		if(assignment !=null) {
+			assignment.setName(name);
+			assignmentRepository.save(assignment);
+		}
+		else {
+			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment cannot name cannot be updated "+assignmentId);
+		}
+		
 	}
 	
-	@DeleteMapping("/assignment/delete/{id}")
-	public void deleteAssignment(@PathVariable("id") int assignmentId) {
-		Assignment assignment = assignmentRepository.findById(3).orElse(null);
+	@DeleteMapping("/assignment/delete")
+	@Transactional
+	public void deleteAssignment(@RequestParam("id") int assignmentId) {
+		Assignment assignment = assignmentRepository.findById(assignmentId).orElse(null);
 		if(assignment.getNeedsGrading() == 1) {
-			assignmentRepository.deleteById(3);
+			assignmentRepository.deleteById(assignmentId);
 		}
 		else {
 			throw new ResponseStatusException( HttpStatus.BAD_REQUEST, "Assignment cannot be deleted. "+assignmentId );
