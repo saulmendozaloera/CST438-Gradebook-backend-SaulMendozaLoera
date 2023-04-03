@@ -58,6 +58,11 @@ public class EndToEndNewAssignment {
         } catch (Exception e) {
         	e.printStackTrace();
         	throw e;
-        }
+        	
+		} finally {
+			driver.close();
+			driver.quit();
+
+		}
 	}
 }
